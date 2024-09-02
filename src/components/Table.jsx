@@ -117,8 +117,8 @@ const DynamicFTECalculator = () => {
 
     const formData = {
       role: selectedRole,
-      billableItems,
-      nonBillableItems,
+      //   billableItems,
+      //   nonBillableItems,
       billableTotal: calculateTotal(billableItems),
       nonBillableTotal: calculateTotal(nonBillableItems),
       grandTotal:
