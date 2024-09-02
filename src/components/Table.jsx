@@ -7,6 +7,8 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const roleConfig = {
   Doctors: {
@@ -84,6 +86,7 @@ const DynamicFTECalculator = () => {
   const [nonBillableItems, setNonBillableItems] = useState(
     roleConfig.Doctors.nonBillableItems
   );
+  const [submitMessage, setSubmitMessage] = useState(null);
 
   const handleRoleChange = (role) => {
     setSelectedRole(role);
@@ -109,8 +112,41 @@ const DynamicFTECalculator = () => {
   const calculateTotal = (items) =>
     items.reduce((sum, item) => sum + item.total, 0);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      role: selectedRole,
+      billableItems,
+      nonBillableItems,
+      billableTotal: calculateTotal(billableItems),
+      nonBillableTotal: calculateTotal(nonBillableItems),
+      grandTotal:
+        calculateTotal(billableItems) + calculateTotal(nonBillableItems),
+    };
+
+    try {
+      // Here you would typically send the data to your backend API
+      // For this example, we'll just simulate an API call with a timeout
+      //   await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      console.log("Form submitted:", formData);
+      const textSuccess = JSON.stringify(formData, null, 2);
+      setSubmitMessage({
+        type: "success",
+        text: `${textSuccess}`,
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitMessage({
+        type: "error",
+        text: "Error submitting form. Please try again.",
+      });
+    }
+  };
+
   return (
-    <div className="p-4">
+    <form onSubmit={handleSubmit} className="p-4">
       <h1 className="text-2xl font-bold mb-4">FTE Calculator</h1>
       <Select value={selectedRole} onValueChange={handleRoleChange}>
         <SelectTrigger className="w-[180px]">
@@ -182,7 +218,24 @@ const DynamicFTECalculator = () => {
           ).toFixed(4)}
         </p>
       </div>
-    </div>
+
+      <Button type="submit" className="mt-4">
+        Submit
+      </Button>
+
+      {submitMessage && (
+        <Alert
+          className={`mt-4 ${
+            submitMessage.type === "success" ? "bg-green-100" : "bg-red-100"
+          }`}
+        >
+          <AlertTitle>
+            {submitMessage.type === "success" ? "Success" : "Error"}
+          </AlertTitle>
+          <AlertDescription>{submitMessage.text}</AlertDescription>
+        </Alert>
+      )}
+    </form>
   );
 };
 
